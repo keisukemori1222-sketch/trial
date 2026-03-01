@@ -3,81 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>業績管理ダッシュボード</title>
+<title>9期コンサル事業 業績管理ダッシュボード</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; color: #333; }
 
   .header {
-    background: linear-gradient(135deg, #1a73e8, #4285f4);
+    background: linear-gradient(135deg, #1a237e, #283593);
     color: #fff; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between;
   }
-  .header h1 { font-size: 22px; font-weight: 600; }
+  .header h1 { font-size: 20px; font-weight: 600; }
+  .header .subtitle { font-size: 12px; opacity: 0.8; margin-top: 2px; }
 
-  .upload-area {
-    background: rgba(255,255,255,0.2); border: 2px dashed rgba(255,255,255,0.5);
-    border-radius: 8px; padding: 10px 20px; cursor: pointer; font-size: 14px; color: #fff;
-    transition: background 0.2s;
-  }
-  .upload-area:hover { background: rgba(255,255,255,0.3); }
+  .container { max-width: 1360px; margin: 0 auto; padding: 24px; }
 
-  .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
-
-  /* KPIカード */
-  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  /* KPI cards */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
   .kpi-card {
-    background: #fff; border-radius: 12px; padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    background: #fff; border-radius: 12px; padding: 18px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #1a237e;
   }
-  .kpi-card .label { font-size: 13px; color: #666; margin-bottom: 4px; }
-  .kpi-card .value { font-size: 28px; font-weight: 700; color: #1a73e8; }
-  .kpi-card .delta { font-size: 13px; margin-top: 4px; }
-  .kpi-card .delta.up { color: #0d904f; }
-  .kpi-card .delta.down { color: #d93025; }
+  .kpi-card .label { font-size: 12px; color: #666; margin-bottom: 4px; }
+  .kpi-card .value { font-size: 26px; font-weight: 700; color: #1a237e; }
+  .kpi-card .sub { font-size: 12px; margin-top: 4px; color: #888; }
+  .kpi-card .value.positive { color: #2e7d32; }
+  .kpi-card .value.negative { color: #c62828; }
 
-  /* チャートグリッド */
+  /* Chart grid */
   .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
   .chart-card {
     background: #fff; border-radius: 12px; padding: 20px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
   .chart-card.full { grid-column: 1 / -1; }
-  .chart-card h3 { font-size: 15px; color: #444; margin-bottom: 12px; font-weight: 600; }
+  .chart-card h3 { font-size: 14px; color: #444; margin-bottom: 12px; font-weight: 600; }
   .chart-card canvas { width: 100% !important; }
 
-  /* テーブル */
+  /* Tables */
   .table-card {
     background: #fff; border-radius: 12px; padding: 20px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 24px; overflow-x: auto;
   }
-  .table-card h3 { font-size: 15px; color: #444; margin-bottom: 12px; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { background: #f8f9fa; font-weight: 600; text-align: center; padding: 8px 12px; border-bottom: 2px solid #dee2e6; white-space: nowrap; }
-  td { padding: 8px 12px; border-bottom: 1px solid #eee; text-align: right; white-space: nowrap; }
-  td:first-child, th:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 1; }
+  .table-card h3 { font-size: 14px; color: #444; margin-bottom: 12px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #f8f9fa; font-weight: 600; text-align: center; padding: 8px 10px; border-bottom: 2px solid #dee2e6; white-space: nowrap; }
+  td { padding: 7px 10px; border-bottom: 1px solid #eee; text-align: right; white-space: nowrap; }
+  td:first-child, th:first-child { text-align: left; position: sticky; left: 0; background: inherit; z-index: 1; }
   th:first-child { background: #f8f9fa; }
-  tr:hover td { background: #f0f7ff; }
-  tr:hover td:first-child { background: #f0f7ff; }
-  .bold-row td { font-weight: 700; }
+  tr:hover td { background: #f0f4ff; }
+  .bold-row td { font-weight: 700; background: #fafafa; }
 
-  .footer { text-align: center; color: #999; font-size: 12px; padding: 16px; }
+  /* Heatmap */
+  .heatmap-cell {
+    text-align: center; font-weight: 600; font-size: 11px; padding: 6px 8px;
+    border-radius: 4px; min-width: 50px;
+  }
+
+  .footer { text-align: center; color: #999; font-size: 11px; padding: 16px; }
 
   @media (max-width: 768px) {
     .chart-grid { grid-template-columns: 1fr; }
-    .header { flex-direction: column; gap: 12px; }
+    .header { flex-direction: column; gap: 8px; text-align: center; }
   }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>&#x1f4ca; 業績管理ダッシュボード</h1>
-  <label class="upload-area" id="uploadLabel">
-    &#x1f4c1; Excelファイルを差し替える（ドラッグ＆ドロップ or クリック）
-    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">
-  </label>
+  <div>
+    <h1>9期 コンサル事業 業績管理ダッシュボード</h1>
+    <div class="subtitle">2025年9月 - 2026年8月 | データ時点: 2025/11/16</div>
+  </div>
 </div>
 
 <div class="container">
@@ -86,233 +83,304 @@
   <div id="tables"></div>
 </div>
 
-<div class="footer">データソース: 業績管理表（Excel） | ブラウザ上で動作（サーバー不要）</div>
+<div class="footer">9期コンサル事業売上管理 | データ時点: 2025/11/16</div>
 
 <script>
-// ===== サンプルデータ（埋め込み） =====
-const SAMPLE_DATA = {
-  "月次PL": [
-    ["勘定科目","2025/4月","2025/5月","2025/6月","2025/7月","2025/8月","2025/9月","2025/10月","2025/11月","2025/12月","2026/1月","2026/2月","2026/3月"],
-    ["売上高","50697","51901","58117","53238","55651","62216","57719","57296","68064","57423","59221","70915"],
-    ["売上原価","27972","31786","34020","30102","33327","34622","34693","34839","37653","31988","33440","39852"],
-    ["売上総利益（粗利）","22725","20115","24097","23136","22324","27594","23026","22457","30411","25435","25781","31063"],
-    ["販売費及び一般管理費","12342","12407","12844","12961","12833","13582","13446","13563","13573","13563","13872","14049"],
-    ["  人件費","5946","6018","6121","6382","6438","6493","6729","6872","6884","7017","7132","7387"],
-    ["  広告宣伝費","2361","2460","2701","2654","2327","3074","2736","2680","2753","2567","2718","2681"],
-    ["  地代家賃","1500","1500","1500","1500","1500","1500","1500","1500","1500","1500","1500","1500"],
-    ["  減価償却費","1000","1000","1000","1000","1000","1000","1000","1000","1000","1000","1000","1000"],
-    ["  その他販管費","1535","1429","1522","1425","1568","1515","1481","1511","1436","1479","1522","1481"],
-    ["営業利益","10383","7708","11253","10175","9491","14012","9580","8894","16838","11872","11909","17014"]
-  ],
-  "部門別売上": [
-    ["部門","2025/4月","2025/5月","2025/6月","2025/7月","2025/8月","2025/9月","2025/10月","2025/11月","2025/12月","2026/1月","2026/2月","2026/3月"],
-    ["営業1部","16400","15919","17593","16443","17611","19489","16565","15901","19816","16586","16944","22782"],
-    ["営業2部","13437","12590","14890","13087","14835","15451","13886","13743","17183","13810","15005","18857"],
-    ["営業3部","9976","9914","12548","10663","10401","11541","10822","11692","14248","11341","11017","13914"],
-    ["EC事業部","8208","7821","9374","8446","7695","9661","8909","8645","9828","8807","8331","10526"],
-    ["コンサル事業部","5032","5566","6161","5122","5565","5901","6152","6069","6586","5869","6025","6697"],
-    ["合計","53053","51810","60566","53761","56107","62043","56334","56050","67661","56413","57322","72776"]
-  ],
-  "KPI": [
-    ["KPI項目","2025/4月","2025/5月","2025/6月","2025/7月","2025/8月","2025/9月","2025/10月","2025/11月","2025/12月","2026/1月","2026/2月","2026/3月"],
-    ["新規受注件数（件）","110","102","113","104","83","97","85","125","124","123","101","91"],
-    ["既存顧客売上比率（%）","73.2","74.9","62.5","69.3","63.5","75","75.8","66.3","72.5","74.4","70.4","81.1"],
-    ["顧客単価（千円）","484.6","446.8","518","562.4","457.8","485.5","635","567.1","526.6","548.8","466.6","493.9"],
-    ["従業員数（人）","160","169","160","161","158","177","166","189","189","165","172","188"],
-    ["一人当たり売上（千円）","317.1","313.7","382.3","356.1","351.3","380.9","386.5","337.3","332.4","364.6","367.3","374.5"]
-  ]
-};
+// ===== DATA =====
+const MONTHS = ['9月','10月','11月','12月','1月','2月','3月','4月','5月','6月','7月','8月'];
 
-// ===== グローバル変数 =====
-let charts = [];
+// ①② Cumulative sales vs target (千円)
+const TARGET_CUMULATIVE = [21000, 49000, 77000, 105000, 129500, 157500, 192500, 224000, 255500, 290500, 322000, 350000];
+const ACTUAL_CUMULATIVE = [21320, 45281, 66781, 85963, 100863, 121963, 139313, 146963, 154613, 160763, 166913, 167613];
 
-// ===== ユーティリティ =====
-function num(v) { return parseFloat(v) || 0; }
+// Single month
+const TARGET_MONTHLY = [21000, 28000, 28000, 28000, 24500, 28000, 35000, 31500, 31500, 35000, 31500, 28000];
+const ACTUAL_MONTHLY = [21320, 23961, 21500, 19182, 14900, 21100, 17350, 7650, 7650, 6150, 6150, 700];
 
-function formatCurrency(v) {
+// ④ Sales by confidence level (単月, 千円, pre-conversion)
+const CONF_SEIRITSU = [19320, 21961, 19500, 16182, 11700, 16200, 11150, 5450, 5450, 5450, 5450, 0];
+const CONF_A = [2000, 2000, 2000, 3000, 3200, 4900, 6200, 2200, 2200, 700, 700, 700];
+const CONF_B = [0, 0, 0, 0, 0, 0, 2000, 2160, 2160, 2200, 2160, 2160];
+const CONF_C = [0, 2000, 2000, 2000, 0, 0, 1500, 3300, 4200, 3800, 2000, 2000];
+const CONF_D = [0, 2000, 2000, 2000, 2000, 4000, 3700, 10200, 11700, 11700, 8500, 8500];
+
+// ⑤ Client sales (成立+A, total 9期分, 千円) - aggregated by client
+const CLIENT_SALES = [
+  { name: 'アートプレスト', value: 44950 },
+  { name: 'YAMAGATA', value: 14500 },
+  { name: 'ローソンエンタテインメント', value: 12300 },
+  { name: 'MSプライマリー', value: 7000 },
+  { name: 'パラマウントベッド', value: 6916 },
+  { name: '豊田通商', value: 6750 },
+  { name: 'OKI', value: 4000 },
+  { name: '三井情報', value: 3500 },
+  { name: '田島ルーフィング', value: 3100 },
+  { name: 'JALUX', value: 1670 },
+  { name: 'パーソルクロステクノロジー', value: 2250 },
+  { name: 'オムロンエキスパートエンジニアリング', value: 2000 },
+  { name: 'コメダ', value: 2000 },
+  { name: 'パラドックス', value: 1950 },
+  { name: 'オーネスト', value: 1300 },
+  { name: '日本総研', value: 600 },
+  { name: '伊藤ハム米久HD', value: 550 },
+  { name: '宮﨑製鋼', value: 500 },
+  { name: 'asics', value: 400 },
+].sort((a, b) => b.value - a.value);
+
+// ⑥ Consultant utilization (CH) - target and estimate by month
+const MEMBERS = [
+  { name: '波多野', target: 0.3, actual: [0.28, 0.33, 0.31, 0.31, 0.19, 0.20, 0.20, 0.20, 0.20, 0.20, 0.20, 0] },
+  { name: '小川',   target: 0.5, actual: [0.209, 0.14, 0.14, 0.14, 0.13, 0.21, 0.08, 0, 0, 0, 0, 0] },
+  { name: '啓亮',   target: 0.8, actual: [0.525, 0.444, 0.784, 0.51, 1.61, 1.685, 1.49, 0.77, 0.77, 0.27, 0.27, 0.27] },
+  { name: '友祐',   target: 0.9, actual: [1.97, 2.205, 2.202, 0.9, 1.46, 1.27, 0.635, 0.045, 0.045, 0.045, 0.045, 0] },
+  { name: '芹澤',   target: 0.9, actual: [0.98, 1.25, 0.9, 1.183, 0.4, 0.55, 0.1, 0, 0, 0, 0, 0] },
+  { name: '弓本',   target: 0.9, actual: [0.75, 0.55, 1.1, 0.85, 0.85, 0.3, 0, 0, 0, 0, 0, 0] },
+  { name: '丸田',   target: 0.9, actual: [1.166, 2.2, 1.35, 1.64, 0.52, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0] },
+  { name: '加藤',   target: 0.9, actual: [0.75, 0.97, 0.69, 0.75, 0.12, 0.75, 0.695, 0.4, 0.4, 0.4, 0.4, 0] },
+  { name: '古藤',   target: 0.8, actual: [0, 0, 0, 0, 0, 0.7, 1.0, 0, 0, 0, 0, 0] },
+  { name: '小野寺', target: 0,   actual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+];
+
+// Year-over-year comparison
+const PREV_YEAR_CUMULATIVE = [10170, 24330, 37890, 49300, 59920, 72430, 88830, 99460, 116510, 135660, 155970, 169500];
+
+// ===== RENDER =====
+function render() {
+  renderKPI();
+  renderCharts();
+  renderTables();
+}
+
+// ----- KPI Cards -----
+function renderKPI() {
+  const container = document.getElementById('kpiRow');
+  const actualTotal = ACTUAL_CUMULATIVE[ACTUAL_CUMULATIVE.length - 1];
+  const targetTotal = TARGET_CUMULATIVE[TARGET_CUMULATIVE.length - 1];
+  const gap = actualTotal - targetTotal;
+  const achieveRate = (actualTotal / targetTotal * 100).toFixed(1);
+  // Latest month with meaningful data (up to Nov = index 2)
+  const latestIdx = 2; // 11月 (index 2)
+  const currentCum = ACTUAL_CUMULATIVE[latestIdx];
+  const currentTarget = TARGET_CUMULATIVE[latestIdx];
+  const currentGap = currentCum - currentTarget;
+  const prevYearCum = PREV_YEAR_CUMULATIVE[latestIdx];
+  const yoyChange = currentCum - prevYearCum;
+
+  const cards = [
+    { label: '累計売上（11月末時点）', value: formatK(currentCum), sub: `成立+A ベース` },
+    { label: '累計目標（11月末時点）', value: formatK(currentTarget), sub: `通期目標: ${formatK(targetTotal)}` },
+    { label: 'GAP（実績 - 目標）', value: formatK(currentGap), cls: currentGap >= 0 ? 'positive' : 'negative', sub: `達成率: ${(currentCum / currentTarget * 100).toFixed(1)}%` },
+    { label: '前年同期比', value: formatK(yoyChange), cls: yoyChange >= 0 ? 'positive' : 'negative', sub: `8期累計: ${formatK(prevYearCum)}` },
+    { label: '通期見通し達成率', value: achieveRate + '%', cls: achieveRate >= 100 ? 'positive' : 'negative', sub: `見通し: ${formatK(actualTotal)} / 目標: ${formatK(targetTotal)}` },
+  ];
+
+  container.innerHTML = cards.map(c => `
+    <div class="kpi-card">
+      <div class="label">${c.label}</div>
+      <div class="value ${c.cls || ''}">${c.value}</div>
+      <div class="sub">${c.sub}</div>
+    </div>
+  `).join('');
+}
+
+function formatK(v) {
   if (Math.abs(v) >= 10000) return (v / 10000).toFixed(1) + '億円';
+  if (Math.abs(v) >= 1000) return (v / 1000).toFixed(0) + ',000千円';
   return v.toLocaleString() + '千円';
 }
 
-function destroyCharts() {
-  charts.forEach(c => c.destroy());
-  charts = [];
-}
+// ----- Charts -----
+let charts = [];
+function destroyCharts() { charts.forEach(c => c.destroy()); charts = []; }
 
-// ===== シートからデータを取得するヘルパー =====
-function getRow(sheet, rowName) {
-  const row = sheet.find(r => r[0] === rowName);
-  return row ? row.slice(1).map(num) : [];
-}
-
-function getLabels(sheet) {
-  return sheet[0].slice(1);
-}
-
-// ===== KPIカード =====
-function renderKPI(data) {
-  const container = document.getElementById('kpiRow');
-  container.innerHTML = '';
-
-  const pl = data['月次PL'];
-  if (!pl) return;
-
-  const labels = getLabels(pl);
-  const items = [
-    { label: '売上高', key: '売上高' },
-    { label: '粗利', key: '売上総利益（粗利）' },
-    { label: '営業利益', key: '営業利益' },
-  ];
-
-  items.forEach(item => {
-    const vals = getRow(pl, item.key);
-    if (vals.length < 2) return;
-    const current = vals[vals.length - 1];
-    const prev = vals[vals.length - 2];
-    const delta = prev !== 0 ? ((current - prev) / Math.abs(prev) * 100) : 0;
-    const isUp = delta >= 0;
-
-    const card = document.createElement('div');
-    card.className = 'kpi-card';
-    card.innerHTML = `
-      <div class="label">${item.label}（${labels[labels.length - 1]}）</div>
-      <div class="value">${formatCurrency(current)}</div>
-      <div class="delta ${isUp ? 'up' : 'down'}">${isUp ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}%（前月比）</div>
-    `;
-    container.appendChild(card);
-  });
-
-  // 粗利率も追加
-  const revenue = getRow(pl, '売上高');
-  const gross = getRow(pl, '売上総利益（粗利）');
-  if (revenue.length > 0 && gross.length > 0) {
-    const rate = (gross[gross.length - 1] / revenue[revenue.length - 1] * 100);
-    const prevRate = (gross[gross.length - 2] / revenue[revenue.length - 2] * 100);
-    const delta = rate - prevRate;
-    const isUp = delta >= 0;
-    const card = document.createElement('div');
-    card.className = 'kpi-card';
-    card.innerHTML = `
-      <div class="label">粗利率（${labels[labels.length - 1]}）</div>
-      <div class="value">${rate.toFixed(1)}%</div>
-      <div class="delta ${isUp ? 'up' : 'down'}">${isUp ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}pt（前月比）</div>
-    `;
-    container.appendChild(card);
-  }
-}
-
-// ===== チャート描画 =====
-function renderCharts(data) {
+function renderCharts() {
   destroyCharts();
   const grid = document.getElementById('chartGrid');
   grid.innerHTML = '';
 
-  const pl = data['月次PL'];
-  const dept = data['部門別売上'];
-  const kpi = data['KPI'];
-
-  if (pl) {
-    const labels = getLabels(pl);
-
-    // 1. 月次PL推移（折れ線）
-    addChart(grid, '月次PL推移', 'full', canvas => {
-      charts.push(new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            { label: '売上高', data: getRow(pl, '売上高'), borderColor: '#4472C4', backgroundColor: 'rgba(68,114,196,0.1)', fill: true, tension: 0.3 },
-            { label: '粗利', data: getRow(pl, '売上総利益（粗利）'), borderColor: '#ED7D31', backgroundColor: 'transparent', tension: 0.3 },
-            { label: '営業利益', data: getRow(pl, '営業利益'), borderColor: '#70AD47', backgroundColor: 'transparent', tension: 0.3 },
-          ]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => v.toLocaleString() } } } }
-      }));
-    });
-
-    // 2. 利益率推移
-    const revenue = getRow(pl, '売上高');
-    const grossProfit = getRow(pl, '売上総利益（粗利）');
-    const opProfit = getRow(pl, '営業利益');
-    addChart(grid, '利益率推移（%）', '', canvas => {
-      charts.push(new Chart(canvas, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            { label: '粗利率', data: grossProfit.map((v, i) => revenue[i] ? (v / revenue[i] * 100).toFixed(1) : 0), backgroundColor: 'rgba(68,114,196,0.6)' },
-            { label: '営業利益率', data: opProfit.map((v, i) => revenue[i] ? (v / revenue[i] * 100).toFixed(1) : 0), type: 'line', borderColor: '#ED7D31', backgroundColor: 'transparent', tension: 0.3, yAxisID: 'y' },
-          ]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => v + '%' } } } }
-      }));
-    });
-
-    // 3. 販管費内訳（ドーナツ）
-    const costItems = ['  人件費', '  広告宣伝費', '  地代家賃', '  減価償却費', '  その他販管費'];
-    const lastIdx = labels.length - 1;
-    const costLabels = [];
-    const costValues = [];
-    costItems.forEach(item => {
-      const row = pl.find(r => r[0] === item);
-      if (row) {
-        costLabels.push(item.trim());
-        costValues.push(num(row[lastIdx + 1]));
-      }
-    });
-    addChart(grid, `販管費内訳（${labels[lastIdx]}）`, '', canvas => {
-      charts.push(new Chart(canvas, {
-        type: 'doughnut',
-        data: {
-          labels: costLabels,
-          datasets: [{ data: costValues, backgroundColor: ['#4472C4','#ED7D31','#A5A5A5','#FFC000','#70AD47'] }]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'right' } } }
-      }));
-    });
-  }
-
-  // 4. 部門別売上（積み上げ棒）
-  if (dept) {
-    const labels = getLabels(dept);
-    const deptRows = dept.slice(1).filter(r => r[0] !== '合計');
-    const colors = ['#4472C4','#ED7D31','#A5A5A5','#FFC000','#70AD47','#5B9BD5'];
-
-    addChart(grid, '部門別売上推移', 'full', canvas => {
-      charts.push(new Chart(canvas, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: deptRows.map((row, i) => ({
-            label: row[0],
-            data: row.slice(1).map(num),
-            backgroundColor: colors[i % colors.length],
-          }))
-        },
-        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => v.toLocaleString() } } } }
-      }));
-    });
-  }
-
-  // 5. KPI推移
-  if (kpi) {
-    const labels = getLabels(kpi);
-    const kpiRows = kpi.slice(1);
-    const kpiColors = ['#4472C4','#ED7D31','#70AD47','#FFC000','#5B9BD5'];
-
-    kpiRows.forEach((row, i) => {
-      addChart(grid, row[0], '', canvas => {
-        charts.push(new Chart(canvas, {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [{ label: row[0], data: row.slice(1).map(num), borderColor: kpiColors[i % kpiColors.length], tension: 0.3, fill: false }]
+  // ①②③ Cumulative sales vs target with GAP
+  addChart(grid, '① ② ③ 月次累積売上 vs 目標 & GAP', 'full', canvas => {
+    const gapData = ACTUAL_CUMULATIVE.map((v, i) => v - TARGET_CUMULATIVE[i]);
+    charts.push(new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: MONTHS,
+        datasets: [
+          {
+            label: 'GAP（実績-目標）',
+            data: gapData,
+            backgroundColor: gapData.map(v => v >= 0 ? 'rgba(46,125,50,0.5)' : 'rgba(198,40,40,0.5)'),
+            borderColor: gapData.map(v => v >= 0 ? '#2e7d32' : '#c62828'),
+            borderWidth: 1,
+            yAxisID: 'y1',
+            order: 2,
           },
-          options: { responsive: true, plugins: { legend: { display: false } } }
-        }));
-      });
-    });
-  }
+          {
+            label: '累積実績（成立+A）',
+            data: ACTUAL_CUMULATIVE,
+            borderColor: '#1a237e',
+            backgroundColor: 'rgba(26,35,126,0.08)',
+            fill: true,
+            tension: 0.3,
+            type: 'line',
+            pointRadius: 5,
+            pointBackgroundColor: '#1a237e',
+            yAxisID: 'y',
+            order: 0,
+          },
+          {
+            label: '累積目標',
+            data: TARGET_CUMULATIVE,
+            borderColor: '#e65100',
+            borderDash: [6, 4],
+            backgroundColor: 'transparent',
+            tension: 0.3,
+            type: 'line',
+            pointRadius: 4,
+            pointBackgroundColor: '#e65100',
+            yAxisID: 'y',
+            order: 1,
+          },
+          {
+            label: '前年累積（8期）',
+            data: PREV_YEAR_CUMULATIVE,
+            borderColor: '#9e9e9e',
+            borderDash: [3, 3],
+            backgroundColor: 'transparent',
+            tension: 0.3,
+            type: 'line',
+            pointRadius: 3,
+            pointBackgroundColor: '#9e9e9e',
+            yAxisID: 'y',
+            order: 1,
+          },
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() + '千円'
+            }
+          }
+        },
+        scales: {
+          y: {
+            position: 'left',
+            title: { display: true, text: '累積売上（千円）' },
+            ticks: { callback: v => (v / 1000).toFixed(0) + '千' },
+          },
+          y1: {
+            position: 'right',
+            title: { display: true, text: 'GAP（千円）' },
+            ticks: { callback: v => (v / 1000).toFixed(0) + '千' },
+            grid: { drawOnChartArea: false },
+          }
+        }
+      }
+    }));
+  });
+
+  // ④ Sales by confidence level (stacked bar)
+  addChart(grid, '④ 確度別売上（単月・千円）', '', canvas => {
+    charts.push(new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: MONTHS,
+        datasets: [
+          { label: '成立', data: CONF_SEIRITSU, backgroundColor: '#1a237e' },
+          { label: 'A', data: CONF_A, backgroundColor: '#1565c0' },
+          { label: 'B', data: CONF_B, backgroundColor: '#42a5f5' },
+          { label: 'C', data: CONF_C, backgroundColor: '#ffa726' },
+          { label: 'D', data: CONF_D, backgroundColor: '#ef5350' },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() + '千円'
+            }
+          }
+        },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, ticks: { callback: v => v.toLocaleString() } }
+        }
+      }
+    }));
+  });
+
+  // ⑤ Client sales (horizontal bar, top 15)
+  const topClients = CLIENT_SALES.slice(0, 15);
+  addChart(grid, '⑤ クライアント別売上（成立+A・千円）', '', canvas => {
+    charts.push(new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: topClients.map(c => c.name.length > 12 ? c.name.slice(0, 12) + '...' : c.name),
+        datasets: [{
+          label: '売上（千円）',
+          data: topClients.map(c => c.value),
+          backgroundColor: topClients.map((_, i) => {
+            const colors = ['#1a237e','#283593','#303f9f','#3949ab','#3f51b5','#5c6bc0','#7986cb','#9fa8da','#c5cae9','#e8eaf6','#1565c0','#1976d2','#1e88e5','#42a5f5','#64b5f6'];
+            return colors[i % colors.length];
+          }),
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.parsed.x.toLocaleString() + '千円'
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { callback: v => v.toLocaleString() } }
+        }
+      }
+    }));
+  });
+
+  // Monthly single-month actual vs target
+  addChart(grid, '単月売上 実績 vs 目標（千円）', 'full', canvas => {
+    charts.push(new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: MONTHS,
+        datasets: [
+          {
+            label: '単月実績（成立+A）',
+            data: ACTUAL_MONTHLY,
+            backgroundColor: 'rgba(26,35,126,0.7)',
+          },
+          {
+            label: '単月目標',
+            data: TARGET_MONTHLY,
+            backgroundColor: 'rgba(230,81,0,0.3)',
+            borderColor: '#e65100',
+            borderWidth: 1,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() + '千円' } }
+        },
+        scales: { y: { ticks: { callback: v => v.toLocaleString() } } }
+      }
+    }));
+  });
 }
 
 function addChart(container, title, extraClass, drawFn) {
@@ -325,95 +393,145 @@ function addChart(container, title, extraClass, drawFn) {
   drawFn(canvas);
 }
 
-// ===== テーブル =====
-function renderTables(data) {
+// ----- Tables -----
+function renderTables() {
   const container = document.getElementById('tables');
   container.innerHTML = '';
 
-  const pl = data['月次PL'];
-  if (!pl) return;
+  // ⑥ Consultant utilization heatmap
+  renderUtilizationHeatmap(container);
 
-  const boldRows = ['売上高', '売上総利益（粗利）', '販売費及び一般管理費', '営業利益'];
+  // Cumulative detail table
+  renderCumulativeTable(container);
 
+  // Confidence detail table
+  renderConfidenceTable(container);
+}
+
+function renderUtilizationHeatmap(container) {
   const card = document.createElement('div');
   card.className = 'table-card';
-  card.innerHTML = '<h3>月次PL明細（千円）</h3>';
+  card.innerHTML = '<h3>⑥ コンサルタント別 月次稼働率（CH）- 成立+A</h3>';
 
-  let html = '<table><thead><tr>';
-  pl[0].forEach(h => { html += `<th>${h}</th>`; });
-  html += '</tr></thead><tbody>';
+  let html = '<table><thead><tr><th style="min-width:80px">メンバー</th><th>目標</th>';
+  MONTHS.forEach(m => { html += `<th>${m}</th>`; });
+  html += '<th>平均</th></tr></thead><tbody>';
 
-  pl.slice(1).forEach(row => {
-    const isBold = boldRows.includes(row[0]);
-    html += `<tr class="${isBold ? 'bold-row' : ''}">`;
-    row.forEach((cell, i) => {
-      if (i === 0) {
-        html += `<td>${cell}</td>`;
-      } else {
-        html += `<td>${Number(cell).toLocaleString()}</td>`;
-      }
+  MEMBERS.forEach(m => {
+    if (m.name === '小野寺' && m.actual.every(v => v === 0)) return; // Skip if all zero
+    html += '<tr>';
+    html += `<td style="font-weight:600">${m.name}</td>`;
+    html += `<td style="text-align:center">${m.target}</td>`;
+
+    let sum = 0;
+    let count = 0;
+    m.actual.forEach((v, i) => {
+      const ratio = m.target > 0 ? v / m.target : 0;
+      const bg = getHeatColor(ratio, m.target);
+      html += `<td><div class="heatmap-cell" style="background:${bg}">${v.toFixed(2)}</div></td>`;
+      sum += v;
+      count++;
     });
+
+    const avg = count > 0 ? sum / count : 0;
+    const avgRatio = m.target > 0 ? avg / m.target : 0;
+    html += `<td><div class="heatmap-cell" style="background:${getHeatColor(avgRatio, m.target)};font-weight:700">${avg.toFixed(2)}</div></td>`;
     html += '</tr>';
   });
+
+  html += '</tbody></table>';
+  html += '<div style="margin-top:12px;font-size:11px;color:#888">';
+  html += '<span style="display:inline-block;width:16px;height:12px;background:#c8e6c9;border-radius:2px;vertical-align:middle"></span> 目標達成 ';
+  html += '<span style="display:inline-block;width:16px;height:12px;background:#fff9c4;border-radius:2px;vertical-align:middle;margin-left:12px"></span> 目標の50-99% ';
+  html += '<span style="display:inline-block;width:16px;height:12px;background:#ffcdd2;border-radius:2px;vertical-align:middle;margin-left:12px"></span> 目標の50%未満 ';
+  html += '<span style="display:inline-block;width:16px;height:12px;background:#e3f2fd;border-radius:2px;vertical-align:middle;margin-left:12px"></span> 目標超過(120%+) ';
+  html += '</div>';
+  card.innerHTML += html;
+  container.appendChild(card);
+}
+
+function getHeatColor(ratio, target) {
+  if (target === 0) return '#f5f5f5';
+  if (ratio >= 1.2) return '#e3f2fd';  // Over-utilized
+  if (ratio >= 1.0) return '#c8e6c9';  // At/above target (green)
+  if (ratio >= 0.5) return '#fff9c4';  // 50-99% (yellow)
+  if (ratio > 0) return '#ffcdd2';     // Under 50% (red)
+  return '#f5f5f5';                     // Zero
+}
+
+function renderCumulativeTable(container) {
+  const card = document.createElement('div');
+  card.className = 'table-card';
+  card.innerHTML = '<h3>累積実績詳細（千円）</h3>';
+
+  let html = '<table><thead><tr><th>項目</th>';
+  MONTHS.forEach(m => { html += `<th>${m}</th>`; });
+  html += '<th>合計</th></tr></thead><tbody>';
+
+  const rows = [
+    { label: '①目標', data: TARGET_CUMULATIVE, bold: false },
+    { label: '②実績（成立+A）', data: ACTUAL_CUMULATIVE, bold: true },
+    { label: '③GAP（②-①）', data: ACTUAL_CUMULATIVE.map((v, i) => v - TARGET_CUMULATIVE[i]), bold: true },
+    { label: '8期累積（前年）', data: PREV_YEAR_CUMULATIVE, bold: false },
+  ];
+
+  rows.forEach(r => {
+    html += `<tr class="${r.bold ? 'bold-row' : ''}">`;
+    html += `<td>${r.label}</td>`;
+    r.data.forEach(v => {
+      const color = r.label.includes('GAP') ? (v >= 0 ? 'color:#2e7d32' : 'color:#c62828') : '';
+      html += `<td style="${color}">${v.toLocaleString()}</td>`;
+    });
+    const total = r.data[r.data.length - 1];
+    const color = r.label.includes('GAP') ? (total >= 0 ? 'color:#2e7d32' : 'color:#c62828') : '';
+    html += `<td style="${color};font-weight:700">${total.toLocaleString()}</td>`;
+    html += '</tr>';
+  });
+
   html += '</tbody></table>';
   card.innerHTML += html;
   container.appendChild(card);
 }
 
-// ===== メイン描画 =====
-function render(data) {
-  renderKPI(data);
-  renderCharts(data);
-  renderTables(data);
-}
+function renderConfidenceTable(container) {
+  const card = document.createElement('div');
+  card.className = 'table-card';
+  card.innerHTML = '<h3>確度別売上明細（単月・千円）</h3>';
 
-// ===== Excelファイル読み込み =====
-function parseExcel(arrayBuffer) {
-  const wb = XLSX.read(arrayBuffer, { type: 'array' });
-  const data = {};
-  wb.SheetNames.forEach(name => {
-    const ws = wb.Sheets[name];
-    const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-    // 文字列に統一
-    data[name] = rows.map(row => row.map(cell => cell != null ? String(cell) : ''));
+  let html = '<table><thead><tr><th>確度</th>';
+  MONTHS.forEach(m => { html += `<th>${m}</th>`; });
+  html += '<th>合計</th></tr></thead><tbody>';
+
+  const confData = [
+    { label: '成立', data: CONF_SEIRITSU, color: '#1a237e' },
+    { label: 'A', data: CONF_A, color: '#1565c0' },
+    { label: 'B', data: CONF_B, color: '#42a5f5' },
+    { label: 'C', data: CONF_C, color: '#ffa726' },
+    { label: 'D', data: CONF_D, color: '#ef5350' },
+  ];
+
+  const totals = MONTHS.map((_, i) => CONF_SEIRITSU[i] + CONF_A[i] + CONF_B[i] + CONF_C[i] + CONF_D[i]);
+
+  // Total row first
+  html += '<tr class="bold-row"><td>合計</td>';
+  totals.forEach(v => { html += `<td>${v.toLocaleString()}</td>`; });
+  html += `<td style="font-weight:700">${totals.reduce((a, b) => a + b, 0).toLocaleString()}</td></tr>`;
+
+  confData.forEach(r => {
+    html += '<tr>';
+    html += `<td><span style="display:inline-block;width:10px;height:10px;background:${r.color};border-radius:2px;margin-right:6px;vertical-align:middle"></span>${r.label}</td>`;
+    r.data.forEach(v => { html += `<td>${v.toLocaleString()}</td>`; });
+    html += `<td style="font-weight:600">${r.data.reduce((a, b) => a + b, 0).toLocaleString()}</td>`;
+    html += '</tr>';
   });
-  return data;
+
+  html += '</tbody></table>';
+  card.innerHTML += html;
+  container.appendChild(card);
 }
 
-// ===== ファイルアップロード =====
-const fileInput = document.getElementById('fileInput');
-const uploadLabel = document.getElementById('uploadLabel');
-
-uploadLabel.addEventListener('click', () => fileInput.click());
-
-uploadLabel.addEventListener('dragover', e => { e.preventDefault(); uploadLabel.style.background = 'rgba(255,255,255,0.4)'; });
-uploadLabel.addEventListener('dragleave', () => { uploadLabel.style.background = 'rgba(255,255,255,0.2)'; });
-uploadLabel.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadLabel.style.background = 'rgba(255,255,255,0.2)';
-  if (e.dataTransfer.files.length > 0) loadFile(e.dataTransfer.files[0]);
-});
-
-fileInput.addEventListener('change', e => {
-  if (e.target.files.length > 0) loadFile(e.target.files[0]);
-});
-
-function loadFile(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = parseExcel(e.target.result);
-      render(data);
-      uploadLabel.textContent = '✅ ' + file.name + ' を読み込みました（クリックで別ファイルに変更）';
-    } catch (err) {
-      alert('Excelの読み込みに失敗しました: ' + err.message);
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-// ===== 初期表示 =====
-render(SAMPLE_DATA);
+// ===== INIT =====
+render();
 </script>
 </body>
 </html>
