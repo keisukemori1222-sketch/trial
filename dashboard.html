@@ -184,8 +184,6 @@ function renderKPI() {
 }
 
 function formatK(v) {
-  if (Math.abs(v) >= 10000) return (v / 10000).toFixed(1) + '億円';
-  if (Math.abs(v) >= 1000) return (v / 1000).toFixed(0) + ',000千円';
   return v.toLocaleString() + '千円';
 }
 
@@ -271,12 +269,12 @@ function renderCharts() {
           y: {
             position: 'left',
             title: { display: true, text: '累積売上（千円）' },
-            ticks: { callback: v => (v / 1000).toFixed(0) + '千' },
+            ticks: { callback: v => v.toLocaleString() },
           },
           y1: {
             position: 'right',
             title: { display: true, text: 'GAP（千円）' },
-            ticks: { callback: v => (v / 1000).toFixed(0) + '千' },
+            ticks: { callback: v => v.toLocaleString() },
             grid: { drawOnChartArea: false },
           }
         }
