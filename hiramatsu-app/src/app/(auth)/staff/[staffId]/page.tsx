@@ -93,7 +93,7 @@ export default async function StaffDetailPage({
                       </span>
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Link
                       href={`/staff/${params.staffId}/evaluate?session=${session.id}`}
                       className="px-4 py-2 bg-teal text-white text-sm rounded-lg hover:bg-teal-600 transition-colors"
@@ -105,6 +105,18 @@ export default async function StaffDetailPage({
                       className="px-4 py-2 border border-navy-200 text-navy text-sm rounded-lg hover:bg-navy-50 transition-colors"
                     >
                       ギャップ確認
+                    </Link>
+                    <Link
+                      href={`/staff/${params.staffId}/action-plans?session=${session.id}`}
+                      className="px-4 py-2 border border-gold text-gold-700 text-sm rounded-lg hover:bg-gold-50 transition-colors"
+                    >
+                      行動計画
+                    </Link>
+                    <Link
+                      href={`/staff/${params.staffId}/review?session=${session.id}`}
+                      className="px-4 py-2 border border-gold text-gold-700 text-sm rounded-lg hover:bg-gold-50 transition-colors"
+                    >
+                      振り返り
                     </Link>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { GrowthChart } from "@/components/GrowthChart";
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -23,18 +24,66 @@ export default async function DashboardPage() {
   if (profile.role === "manager") {
     return <ManagerDashboard userId={user.id} />;
   }
-  return <StaffDashboard profile={profile} />;
+  return <StaffDashboard profile={profile} userId={user.id} />;
 }
 
 // ── Staff Dashboard ──
 async function StaffDashboard({
   profile,
+  userId,
 }: {
   profile: { id: string; name: string; shokushu: string | null; current_step: number };
+  userId: string;
 }) {
+  const supabase = createClient();
   const shokushuLabel = profile.shokushu ?? "未設定";
   const now = new Date();
   const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+  // 成長グラフ用データ取得（過去のセッション別平均スコア）
+  const { data: sessions } = await supabase
+    .from("evaluation_sessions")
+    .select("id, session_month")
+    .eq("user_id", userId)
+    .order("session_month", { ascending: true });
+
+  let chartData: { month: string; avgSelf: number | null; avgMgr: number | null }[] = [];
+
+  if (sessions && sessions.length > 0) {
+    const sessionIds = sessions.map((s) => s.id);
+
+    const [{ data: selfEvals }, { data: mgrEvals }] = await Promise.all([
+      supabase
+        .from("self_evaluations")
+        .select("session_id, score")
+        .in("session_id", sessionIds),
+      supabase
+        .from("manager_evaluations")
+        .select("session_id, score")
+        .in("session_id", sessionIds),
+    ]);
+
+    chartData = sessions.map((session) => {
+      const selfScores = (selfEvals ?? [])
+        .filter((e) => e.session_id === session.id)
+        .map((e) => e.score);
+      const mgrScores = (mgrEvals ?? [])
+        .filter((e) => e.session_id === session.id)
+        .map((e) => e.score);
+
+      return {
+        month: session.session_month,
+        avgSelf:
+          selfScores.length > 0
+            ? Math.round((selfScores.reduce((a, b) => a + b, 0) / selfScores.length) * 10) / 10
+            : null,
+        avgMgr:
+          mgrScores.length > 0
+            ? Math.round((mgrScores.reduce((a, b) => a + b, 0) / mgrScores.length) * 10) / 10
+            : null,
+      };
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -45,6 +94,12 @@ async function StaffDashboard({
           <InfoCard label="職種" value={shokushuLabel} />
           <InfoCard label="現在のStep" value={`Step ${profile.current_step}`} />
         </div>
+      </div>
+
+      {/* 成長グラフ */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <h2 className="text-lg font-semibold text-navy mb-4">成長グラフ</h2>
+        <GrowthChart data={chartData} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -59,6 +114,12 @@ async function StaffDashboard({
           description="自己評価と上司評価のギャップを確認"
           href={`/staff/${profile.id}/gap`}
           color="teal"
+        />
+        <ActionCard
+          title="行動計画"
+          description="重点項目の行動計画を確認"
+          href={`/staff/${profile.id}/action-plans`}
+          color="gold"
         />
         <ActionCard
           title="月次振り返り"
