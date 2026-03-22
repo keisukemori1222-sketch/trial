@@ -30,7 +30,7 @@ export default async function DashboardPage() {
 async function StaffDashboard({
   profile,
 }: {
-  profile: { name: string; shokushu: string | null; current_step: number };
+  profile: { id: string; name: string; shokushu: string | null; current_step: number };
 }) {
   const shokushuLabel = profile.shokushu ?? "未設定";
   const now = new Date();
@@ -47,11 +47,17 @@ async function StaffDashboard({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <ActionCard
           title="評価入力"
           description={`${currentMonth} の自己評価を入力`}
           href="/evaluation"
+          color="teal"
+        />
+        <ActionCard
+          title="面談準備"
+          description="自己評価と上司評価のギャップを確認"
+          href={`/staff/${profile.id}/gap`}
           color="teal"
         />
         <ActionCard
