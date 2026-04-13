@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>森 啓亮 | システムコーチ</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-hero: #1a1f2e;
+  --bg-hero-mid: #2a3042;
+  --bg-warm-white: #f7f4f0;
+  --bg-warm-light: #f0ece6;
+  --bg-warm-cream: #e8e2d8;
+  --bg-section-alt: #faf8f5;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4540;
+  --text-muted: #8a8578;
+  --text-on-dark: #f0ece6;
+  --text-on-dark-muted: #b0a898;
+  --camel: #b8864e;
+  --camel-light: #d4a76a;
+  --camel-warm: #c4956a;
+  --camel-dim: rgba(184,134,78,0.12);
+  --camel-border: rgba(184,134,78,0.3);
+  --gold-star: rgba(212,167,106,0.6);
+  --ink-deep: #0a0e1a;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:16px;line-height:2.1;color:var(--text-primary);background:var(--bg-warm-white);overflow-x:hidden;}
+
+/* ========== NAV ========== */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 40px;display:flex;align-items:center;justify-content:flex-end;transition:background 0.4s,backdrop-filter 0.4s;}
+nav.scrolled{background:rgba(247,244,240,0.92);backdrop-filter:blur(12px);}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:500;letter-spacing:0.12em;text-decoration:none;color:var(--text-on-dark);transition:color 0.3s,opacity 0.3s;}
+nav.scrolled .nav-links a{color:var(--text-primary);}
+.nav-links a:hover{color:var(--camel);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:24px;height:1.5px;background:var(--text-on-dark);transition:all 0.3s;}
+nav.scrolled .hamburger span{background:var(--text-primary);}
+.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(247,244,240,0.97);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:40px;}
+.mobile-menu.active{display:flex;}
+.mobile-menu a{font-family:'Zen Old Mincho',serif;font-size:22px;color:var(--text-primary);text-decoration:none;letter-spacing:0.1em;}
+.mobile-menu a:hover{color:var(--camel);}
+.mobile-close{position:absolute;top:24px;right:36px;font-size:24px;color:var(--text-secondary);cursor:pointer;background:none;border:none;font-family:inherit;}
+
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  nav{padding:20px 24px;}
+}
+
+/* ========== HERO ========== */
+#hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 40% 60%,rgba(60,40,120,0.5) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 30%,rgba(184,134,78,0.15) 0%,transparent 50%),
+             var(--bg-hero);
+  overflow:hidden;
+}
+#starfield{position:absolute;inset:0;pointer-events:none;}
+.hero-fade{
+  position:absolute;bottom:0;left:0;right:0;height:200px;
+  background:linear-gradient(to bottom,transparent,var(--bg-warm-white));
+  pointer-events:none;
+}
+.hero-content{
+  position:relative;z-index:2;
+  text-align:center;
+  padding:0 24px;
+}
+.hero-label{
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px;font-weight:300;
+  letter-spacing:0.35em;
+  color:var(--camel-light);
+  margin-bottom:56px;
+  text-transform:uppercase;
+}
+.hero-catch{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(26px,4.5vw,52px);
+  font-weight:700;
+  line-height:1.6;
+  color:var(--text-on-dark);
+  letter-spacing:0.05em;
+  margin-bottom:0;
+}
+.hero-name{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(13px,1.4vw,16px);
+  font-weight:400;
+  letter-spacing:0.25em;
+  color:var(--text-on-dark-muted);
+  margin-top:28px;
+}
+.hero-line{
+  display:block;
+  width:1px;height:60px;
+  background:linear-gradient(to bottom,var(--camel),transparent);
+  margin:40px auto 0;
+}
+.hero-scroll{
+  font-family:'Cormorant Garamond',serif;
+  font-size:11px;
+  letter-spacing:0.3em;
+  color:var(--text-on-dark-muted);
+  margin-top:12px;
+}
+
+@media(max-width:480px){
+  .hero-catch{font-size:22px;letter-spacing:0.02em;}
+}
+
+/* ========== SECTIONS ========== */
+section{padding:120px 0;}
+.section-inner{max-width:900px;margin:0 auto;padding:0 40px;}
+.section-label{
+  font-family:'Cormorant Garamond',serif;
+  font-size:11px;font-weight:300;
+  letter-spacing:0.4em;text-transform:uppercase;
+  color:var(--camel);margin-bottom:16px;
+}
+.section-title{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(22px,3vw,32px);
+  font-weight:700;
+  color:var(--text-primary);
+  margin-bottom:12px;
+  line-height:1.5;
+}
+.section-divider{
+  width:40px;height:2px;
+  background:var(--camel);
+  margin-bottom:64px;
+}
+
+/* ========== PHILOSOPHY ========== */
+#philosophy{background:var(--bg-section-alt);}
+.philosophy-body{max-width:660px;}
+.philosophy-body p{
+  color:var(--text-secondary);
+  margin-bottom:2em;
+  line-height:2.2;
+}
+.philosophy-sub{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(15px,1.8vw,18px);
+  font-weight:700;
+  color:var(--camel);
+  letter-spacing:0.05em;
+  margin:48px 0 20px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--camel-border);
+}
+.pullquote{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(20px,2.5vw,26px);
+  font-weight:700;
+  color:var(--camel);
+  border-left:3px solid var(--camel);
+  padding-left:24px;
+  margin:40px 0;
+  line-height:1.7;
+}
+.philosophy-creed{
+  margin-top:64px;
+  padding:40px;
+  background:var(--bg-warm-cream);
+  border-left:3px solid var(--camel-border);
+}
+.philosophy-creed p{
+  font-family:'Zen Old Mincho',serif;
+  font-size:15px;
+  color:var(--text-secondary);
+  line-height:2.2;
+  margin:0;
+}
+.philosophy-creed cite{
+  display:block;margin-top:16px;
+  font-style:normal;
+  font-size:13px;
+  color:var(--camel);
+  letter-spacing:0.15em;
+}
+
+/* ========== SERVICE ========== */
+#service{background:var(--bg-warm-white);}
+.service-intro{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(17px,2vw,22px);
+  color:var(--text-secondary);
+  line-height:2;
+  margin-bottom:64px;
+  max-width:660px;
+}
+.service-card{
+  background:var(--bg-warm-light);
+  border:1px solid var(--camel-border);
+  border-radius:4px;
+  padding:56px;
+  margin-bottom:48px;
+  transition:transform 0.3s,box-shadow 0.3s;
+}
+.service-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(184,134,78,0.12);
+}
+.service-card-title{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(20px,2.5vw,26px);
+  font-weight:700;
+  color:var(--text-primary);
+  margin-bottom:24px;
+}
+.service-card p{
+  color:var(--text-secondary);
+  line-height:2.2;
+  margin-bottom:1.5em;
+}
+.service-card-target{
+  font-size:13px;
+  color:var(--camel);
+  letter-spacing:0.15em;
+  border-top:1px solid var(--camel-border);
+  padding-top:20px;
+  margin-top:8px;
+}
+.service-meta{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  margin-top:40px;
+}
+.service-meta-item{
+  text-align:center;
+  padding:20px;
+  background:var(--bg-warm-white);
+  border-radius:4px;
+}
+.service-meta-label{
+  font-size:11px;letter-spacing:0.2em;color:var(--camel);
+  margin-bottom:8px;font-family:'Cormorant Garamond',serif;
+}
+.service-meta-value{
+  font-size:14px;color:var(--text-primary);font-weight:500;
+}
+
+/* Flow */
+.service-flow{margin-top:64px;}
+.service-flow-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;letter-spacing:0.4em;text-transform:uppercase;
+  color:var(--camel);margin-bottom:40px;
+}
+.flow-steps{display:flex;flex-direction:column;gap:0;}
+.flow-step{
+  display:flex;align-items:flex-start;gap:24px;
+  padding:24px 0;
+  border-left:1px solid var(--camel-border);
+  padding-left:32px;
+  position:relative;
+}
+.flow-step::before{
+  content:attr(data-num);
+  position:absolute;left:-12px;top:24px;
+  width:24px;height:24px;
+  background:var(--bg-warm-white);
+  border:1px solid var(--camel);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;color:var(--camel);
+  text-align:center;line-height:22px;
+}
+.flow-step:last-child{border-color:transparent;}
+.flow-step-text{color:var(--text-secondary);font-size:15px;padding-top:2px;}
+.service-cta{
+  margin-top:64px;text-align:center;
+  padding:48px;
+  background:var(--bg-warm-light);
+  border:1px solid var(--camel-border);
+  border-radius:4px;
+}
+.service-cta p{
+  font-family:'Zen Old Mincho',serif;font-size:14px;
+  color:var(--text-muted);letter-spacing:0.1em;margin-bottom:24px;
+}
+.btn-primary{
+  display:inline-block;
+  padding:16px 48px;
+  background:var(--camel);
+  color:#fff;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;font-weight:500;
+  letter-spacing:0.15em;
+  text-decoration:none;
+  border-radius:2px;
+  transition:background 0.3s,transform 0.2s;
+}
+.btn-primary:hover{background:var(--camel-warm);transform:translateY(-2px);}
+
+@media(max-width:768px){
+  .service-card{padding:32px 24px;}
+  .service-meta{grid-template-columns:1fr;}
+}
+
+/* ========== PROFILE ========== */
+#profile{background:var(--bg-section-alt);}
+.profile-grid{
+  display:grid;grid-template-columns:280px 1fr;gap:72px;
+  align-items:start;
+}
+.profile-photo-wrap{
+  position:relative;
+}
+.profile-photo{
+  width:100%;
+  border-radius:12px;
+  border:1px solid var(--camel-border);
+  box-shadow:0 8px 32px rgba(184,134,78,0.1);
+  display:block;
+}
+.profile-photo-placeholder{
+  width:100%;aspect-ratio:3/4;
+  background:var(--bg-warm-cream);
+  border-radius:12px;
+  border:1px solid var(--camel-border);
+  display:flex;align-items:center;justify-content:center;
+}
+.profile-photo-placeholder span{
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;letter-spacing:0.3em;
+  color:var(--camel);text-transform:uppercase;
+}
+.profile-name{
+  font-family:'Zen Old Mincho',serif;
+  font-size:28px;font-weight:700;
+  color:var(--text-primary);
+  margin-bottom:4px;
+}
+.profile-name-en{
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px;font-weight:300;
+  letter-spacing:0.25em;color:var(--camel);
+  margin-bottom:32px;
+}
+.profile-text{
+  color:var(--text-secondary);
+  line-height:2.2;margin-bottom:2em;
+}
+.credentials-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:11px;letter-spacing:0.4em;text-transform:uppercase;
+  color:var(--camel);margin:40px 0 20px;
+}
+.credentials-list{
+  list-style:none;
+}
+.credentials-list li{
+  font-size:14px;color:var(--text-secondary);
+  padding:10px 0;border-bottom:1px solid var(--camel-border);
+  display:flex;align-items:flex-start;gap:12px;line-height:1.7;
+}
+.credentials-list li::before{
+  content:'';
+  display:block;width:4px;height:4px;
+  background:var(--camel);border-radius:50%;
+  flex-shrink:0;margin-top:10px;
+}
+
+@media(max-width:768px){
+  .profile-grid{grid-template-columns:1fr;gap:40px;}
+  .profile-photo-wrap{max-width:240px;margin:0 auto;}
+  .profile-photo-placeholder{max-width:240px;margin:0 auto;}
+}
+
+/* ========== CONTACT ========== */
+#contact{
+  background:var(--bg-hero);
+  padding:120px 0;
+}
+#contact .section-label{color:var(--camel-light);}
+#contact .section-title{color:var(--text-on-dark);}
+#contact .section-divider{background:var(--camel);}
+.contact-message{
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(18px,2.5vw,24px);
+  color:var(--text-on-dark);
+  line-height:1.9;
+  margin-bottom:64px;
+  max-width:600px;
+}
+.contact-buttons{
+  display:flex;gap:24px;flex-wrap:wrap;
+  margin-bottom:32px;
+}
+.btn-contact-primary{
+  display:inline-block;
+  padding:18px 48px;
+  background:var(--camel);color:#fff;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;font-weight:500;
+  letter-spacing:0.15em;text-decoration:none;
+  border-radius:2px;
+  transition:background 0.3s,transform 0.2s;
+}
+.btn-contact-primary:hover{background:var(--camel-light);transform:translateY(-2px);}
+.btn-contact-secondary{
+  display:inline-block;
+  padding:18px 48px;
+  border:1px solid rgba(184,134,78,0.6);
+  color:var(--camel-light);
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;font-weight:400;
+  letter-spacing:0.15em;text-decoration:none;
+  border-radius:2px;
+  transition:border-color 0.3s,color 0.3s,transform 0.2s;
+}
+.btn-contact-secondary:hover{border-color:var(--camel-light);color:#fff;transform:translateY(-2px);}
+.contact-note{
+  font-size:12px;color:var(--text-on-dark-muted);
+  letter-spacing:0.1em;
+}
+
+@media(max-width:768px){
+  .contact-buttons{flex-direction:column;}
+  .btn-contact-primary,.btn-contact-secondary{text-align:center;}
+}
+
+/* ========== FOOTER ========== */
+footer{
+  background:var(--ink-deep);
+  padding:40px;text-align:center;
+}
+footer p{
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;letter-spacing:0.25em;
+  color:var(--text-on-dark-muted);
+}
+
+/* ========== REVEAL ========== */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+@media(max-width:480px){
+  .section-inner{padding:0 20px;}
+  section{padding:80px 0;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <ul class="nav-links">
+    <li><a href="#philosophy">想い</a></li>
+    <li><a href="#service">サービス</a></li>
+    <li><a href="#profile">プロフィール</a></li>
+    <li><a href="#contact">ご予約</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="#philosophy" class="mobile-link">想い</a>
+  <a href="#service" class="mobile-link">サービス</a>
+  <a href="#profile" class="mobile-link">プロフィール</a>
+  <a href="#contact" class="mobile-link">ご予約</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="starfield"></canvas>
+  <div class="hero-content">
+    <h1 class="hero-catch">会議では、誰も本音を言わない。<br>それでも、チームは変われる。</h1>
+    <p class="hero-name">システムコーチ　森啓亮</p>
+    <div class="hero-line"></div>
+    <p class="hero-scroll">SCROLL</p>
+  </div>
+  <div class="hero-fade"></div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="section-inner">
+    <p class="section-label reveal">Philosophy</p>
+    <h2 class="section-title reveal">想い ── なぜ、コーチングなのか</h2>
+    <div class="section-divider reveal"></div>
+    <div class="philosophy-body">
+      <h3 class="philosophy-sub reveal">孤独を恐れ苦しんだ過去</h3>
+      <p class="reveal">以前の私は、孤独に怯えていました。<br>仲間外れになること、周りから価値がないと思われること、<br>それらを恐れ、それを隠すように努力をして成果を出すことで<br>存在を認めてもらおうとしていました。</p>
+      <p class="reveal">しかし、成果を上げても孤独は消えず、いつしか周りを責めるように。</p>
+      <p class="reveal">「何でこんなに頑張っているのに認めてくれないんだ」<br>「なぜわかってくれないんだ」</p>
+      <p class="reveal">そんな思いを抱えながら、周りに対して厳しく当たる私は、<br>いつしか本当に孤独を味わうことになりました。</p>
+      <p class="reveal">周りとも繋がれず、仕事も上手くいかなくなった時、<br>毎日が暗闇で先が見えなくなりました。</p>
+      <blockquote class="pullquote reveal">でも、あの時期があったから、今の自分がいる。</blockquote>
+      <h3 class="philosophy-sub reveal">さらけ出すことで生まれた変化</h3>
+      <p class="reveal">そんな状況が変わったのは、周りの人にそうした弱みや恐れを打ち明けた時でした。</p>
+      <p class="reveal">打ち明けた時は、恥ずかしくて涙が止まりませんでした。<br>でも、打ち明けた先には仲間からの祝福がありました。</p>
+      <p class="reveal">これまで感じなかった心の距離の近さ、居場所。<br>ずっと私が求めていたものは、さらけ出した先にありました。</p>
+      <h3 class="philosophy-sub reveal">自分自身が、関係性を支援する立場へ。</h3>
+      <p class="reveal">あのとき気づいたんです。<br>人は「正しいこと」を言われても変わらない。<br>でも、誰かが本気でさらけ出したとき──<br>関係性のなかに、何かが動き始める。</p>
+      <p class="reveal">いま僕がやっているシステムコーチングは、<br>まさにそれを「チーム」の中で起こす仕事です。</p>
+      <p class="reveal">チームの中にある「言えなかった声」に耳を傾ける。<br>対立を恐れずに、関係性そのものと向き合う。<br>その先に、「このチームにいたい」と思える場所が生まれる。</p>
+      <p class="reveal">私自身がそれを実感してきたからこそ、今は"チームが望む関係性"を実現する支援を行っています。</p>
+      <p class="reveal">苦しみや恐れではなく、愛で関わり合えるチームをつくる。<br>それが僕の仕事です。</p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICE -->
+<section id="service">
+  <div class="section-inner">
+    <p class="section-label reveal">Service</p>
+    <h2 class="section-title reveal">提供するサービス</h2>
+    <div class="section-divider reveal"></div>
+    <p class="service-intro reveal">言えなかった声が、場に出てくる。<br>対立が、信頼に変わる。<br>──システムコーチングは、<br>チームの関係性そのものに働きかけるアプローチです。</p>
+
+    <div class="service-card reveal">
+      <h3 class="service-card-title">システムコーチング</h3>
+      <p>CRR Globalの関係性システムコーチング（ORSC）をベースに、<br>チーム・組織の関係性にアプローチします。</p>
+      <p>対立や停滞の奥にある「第三の声」を聴き、<br>関係性そのものを進化させるプロセスを伴走します。</p>
+      <p>チーム内の心理的安全性を高め、<br>ありのままで繋がれる組織づくりを支援します。</p>
+      <div class="service-meta">
+        <div class="service-meta-item">
+          <div class="service-meta-label">1セッション</div>
+          <div class="service-meta-value">60〜90分</div>
+        </div>
+        <div class="service-meta-item">
+          <div class="service-meta-label">回数目安</div>
+          <div class="service-meta-value">全3〜6回</div>
+        </div>
+        <div class="service-meta-item">
+          <div class="service-meta-label">実施形式</div>
+          <div class="service-meta-value">対面 / オンライン</div>
+        </div>
+      </div>
+      <p class="service-card-target">対象：チーム・組織</p>
+    </div>
+
+    <div class="service-flow reveal">
+      <p class="service-flow-title">SERVICE FLOW</p>
+      <div class="flow-steps">
+        <div class="flow-step" data-num="1"><p class="flow-step-text">初回オリエンテーション（30分・無料）</p></div>
+        <div class="flow-step" data-num="2"><p class="flow-step-text">ヒアリング・ゴール設定</p></div>
+        <div class="flow-step" data-num="3"><p class="flow-step-text">セッション実施（対面 or オンライン）</p></div>
+        <div class="flow-step" data-num="4"><p class="flow-step-text">振り返り・次のステップ</p></div>
+      </div>
+    </div>
+
+    <div class="service-cta reveal">
+      <p>まずは30分の無料オリエンテーションから</p>
+      <a href="#contact" class="btn-primary">セッションを予約する</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROFILE -->
+<section id="profile">
+  <div class="section-inner">
+    <p class="section-label reveal">Profile</p>
+    <h2 class="section-title reveal">プロフィール</h2>
+    <div class="section-divider reveal"></div>
+    <div class="profile-grid">
+      <div class="profile-photo-wrap reveal">
+        <img src="2025-10-18-116.jpg" alt="森啓亮 プロフィール写真" class="profile-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="profile-photo-placeholder" style="display:none;">
+          <span>PHOTO</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <p class="profile-name">森　啓亮</p>
+        <p class="profile-name-en">Keisuke Mori</p>
+        <p class="profile-text">大手大学受験予備校にて校舎運営・マネジメントに従事した後、大手人材グループ企業にて組織人事コンサルタントに転身。働き方改革の推進、人事戦略設計、制度設計、人材開発の領域で幅広いクライアントを支援。</p>
+        <p class="profile-text">その後、ベンチャー企業にて組織人事コンサルティング事業の立ち上げに第一号社員として参画。</p>
+        <p class="profile-text">コンサルタントとしてデータ分析と現場対話の両軸で組織変革を推進する中で、関係性そのものに働きかけるシステムコーチングと出会い、その可能性に深く惹かれる。現在は、組織開発の知見とシステムコーチングを統合し、チームと組織の関係性変容を支援している。</p>
+        <p class="credentials-title">CREDENTIALS</p>
+        <ul class="credentials-list">
+          <li>CRR Global 関係性システムコーチング（ORSC） 応用コース修了</li>
+          <li>組織人事コンサルタント（実務10年）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <p class="section-label reveal">Contact</p>
+    <h2 class="section-title reveal">セッションのご予約・お問い合わせ</h2>
+    <div class="section-divider reveal"></div>
+    <p class="contact-message reveal">あなたのチームに、今どんな声がありますか。<br>聞かせてください。まずはそこから始めましょう。</p>
+    <div class="contact-buttons reveal">
+      <a href="mailto:keisuke.mori1222@gmail.com?subject=【法人】お問い合わせ" class="btn-contact-primary">法人のお問い合わせ</a>
+      <a href="mailto:keisuke.mori1222@gmail.com?subject=無料オリエンテーションのご希望" class="btn-contact-secondary">無料オリエンテーション（30分）</a>
+    </div>
+    <p class="contact-note reveal">※ 初回のオリエンテーションは無料です。お気軽にご相談ください。</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 森 啓亮 ─ System Coaching</p>
+</footer>
+
+<script>
+// Starfield
+(function(){
+  const canvas=document.getElementById('starfield');
+  const ctx=canvas.getContext('2d');
+  let stars=[];
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  function initStars(){
+    stars=[];
+    for(let i=0;i<160;i++){
+      stars.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*1.4+0.3,
+        a:Math.random(),
+        speed:0.003+Math.random()*0.008,
+        phase:Math.random()*Math.PI*2
+      });
+    }
+  }
+  function draw(t){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{
+      const alpha=0.3+0.5*(Math.sin(s.phase+t*s.speed)+1)/2;
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(212,167,106,${alpha*0.7})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize();initStars();
+  window.addEventListener('resize',()=>{resize();initStars();});
+  requestAnimationFrame(draw);
+})();
+
+// Nav scroll
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled',window.scrollY>60);
+});
+
+// Hamburger
+const hamburger=document.getElementById('hamburger');
+const mobileMenu=document.getElementById('mobileMenu');
+const mobileClose=document.getElementById('mobileClose');
+hamburger.addEventListener('click',()=>mobileMenu.classList.add('active'));
+mobileClose.addEventListener('click',()=>mobileMenu.classList.remove('active'));
+document.querySelectorAll('.mobile-link').forEach(a=>{
+  a.addEventListener('click',()=>mobileMenu.classList.remove('active'));
+});
+
+// Reveal
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
